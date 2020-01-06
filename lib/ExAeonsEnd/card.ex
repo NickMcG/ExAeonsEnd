@@ -14,6 +14,8 @@ defmodule ExAeonsEnd.Card do
           name: String.t()
         }
 
+  def new(id, name), do: %__MODULE__{id: id, name: name}
+
   @doc """
   This function takes a list of cards and tries to find the first instance of a
   specific card.
