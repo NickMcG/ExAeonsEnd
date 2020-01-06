@@ -40,7 +40,7 @@ defmodule ExAeonsEnd.PlayerTurnDeck do
   @impl true
   def handle_call(:draw, _from, deck) do
     {card, updated_deck} = deck |> Deck.draw() |> handle_draw()
-    {:reply, card, updated_deck}
+    {:reply, card, updated_deck |> Deck.add_card(:discard, card)}
   end
 
   @impl true
