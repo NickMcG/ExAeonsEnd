@@ -18,3 +18,15 @@ Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_do
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/ex_aeons_end](https://hexdocs.pm/ex_aeons_end).
 
+## Potential Improvements
+
+### Add Property Based Tests
+Potentially it would be easy to add property based tests?
+
+### Change Deck to be a GenServer?
+Potentially Deck should be a GenServer?
+
+### Missing tests
+1. All of player_turn_deck.ex
+2. All of ex_aeons_end.ex (but that may not be necessary)
+3. deck.ex -> shuffle
