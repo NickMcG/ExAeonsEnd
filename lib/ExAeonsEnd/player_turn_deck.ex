@@ -6,9 +6,12 @@ defmodule ExAeonsEnd.PlayerTurnDeck do
   alias ExAeonsEnd.{Card, Deck}
 
   ### Public Interface
-  @spec start_link(1 | 2 | 3 | 4) :: :ignore | {:error, any} | {:ok, pid}
-  def start_link(number_of_players) do
-    player_cards = create_player_cards_for(number_of_players)
+  @spec start_link(1 | 2 | 3 | 4 | [String.t()]) :: :ignore | {:error, any()} | {:ok, pid}
+  def start_link(players), do: start_link(players, false)
+
+  @spec start_link(1 | 2 | 3 | 4 | [String.t()], boolean()) :: :ignore | {:error, any()} | {:ok, pid}
+  def start_link(players, include_assault) do
+    player_cards = create_player_cards_for(players, include_assault)
     deck = %Deck{draw: player_cards, discard: []} |> Deck.shuffle()
 
     GenServer.start_link(__MODULE__, deck)
@@ -64,44 +67,43 @@ defmodule ExAeonsEnd.PlayerTurnDeck do
     do: {:reply, :ok, %Deck{deck | draw: draw_pile}}
 
   ### Private Interface
-  defp create_player_cards_for(1),
+  @p1 "Player 1"
+  @p2 "Player 2"
+  @p3 "Player 3"
+  @p4 "Player 4"
+  @w "Wild"
+  @n "Nemesis"
+  @a "Nemesis - Assault"
+
+  defp create_player_cards(p1, p2, p3, p4, true),
     do: [
-      %Card{id: 2, name: "Player 1"},
-      %Card{id: 3, name: "Player 1"},
-      %Card{id: 4, name: "Player 1"},
-      %Card{id: 5, name: "Nemesis"},
-      %Card{id: 6, name: "Nemesis"}
+      %Card{id: 1, name: p1},
+      %Card{id: 2, name: p2},
+      %Card{id: 3, name: p3},
+      %Card{id: 4, name: p4},
+      %Card{id: 5, name: @n},
+      %Card{id: 6, name: @a}
     ]
 
-  defp create_player_cards_for(2),
+  defp create_player_cards(p1, p2, p3, p4, false),
     do: [
-      %Card{id: 1, name: "Player 1"},
-      %Card{id: 2, name: "Player 1"},
-      %Card{id: 3, name: "Player 2"},
-      %Card{id: 4, name: "Player 2"},
-      %Card{id: 5, name: "Nemesis"},
-      %Card{id: 6, name: "Nemesis"}
+      %Card{id: 1, name: p1},
+      %Card{id: 2, name: p2},
+      %Card{id: 3, name: p3},
+      %Card{id: 4, name: p4},
+      %Card{id: 5, name: @n},
+      %Card{id: 6, name: @n}
     ]
 
-  defp create_player_cards_for(3),
-    do: [
-      %Card{id: 1, name: "Player 1"},
-      %Card{id: 2, name: "Player 2"},
-      %Card{id: 3, name: "Player 3"},
-      %Card{id: 4, name: "Wild"},
-      %Card{id: 5, name: "Nemesis"},
-      %Card{id: 6, name: "Nemesis"}
-    ]
+  defp create_player_cards_for([p1], include_assault), do: create_player_cards(p1, p1, p1, p1, include_assault)
+  defp create_player_cards_for([p1, p2], include_assault), do: create_player_cards(p1, p1, p2, p2, include_assault)
+  defp create_player_cards_for([p1, p2, p3], include_assault), do: create_player_cards(p1, p2, p3, @w, include_assault)
+  defp create_player_cards_for([p1, p2, p3, p4], include_assault), do: create_player_cards(p1, p2, p3, p4, include_assault)
 
-  defp create_player_cards_for(4),
-    do: [
-      %Card{id: 1, name: "Player 1"},
-      %Card{id: 2, name: "Player 2"},
-      %Card{id: 3, name: "Player 3"},
-      %Card{id: 4, name: "Player 4"},
-      %Card{id: 5, name: "Nemesis"},
-      %Card{id: 6, name: "Nemesis"}
-    ]
+  defp create_player_cards_for(1, include_assault), do: create_player_cards(@p1, @p1, @p1, @p1, include_assault)
+  defp create_player_cards_for(2, include_assault), do: create_player_cards(@p1, @p1, @p2, @p2, include_assault)
+  defp create_player_cards_for(3, include_assault), do: create_player_cards(@p1, @p2, @p3, @w, include_assault)
+  defp create_player_cards_for(4, include_assault), do: create_player_cards(@p1, @p2, @p3, @p4, include_assault)
 
   defp handle_draw({:empty, deck = %Deck{discard: discard}}) when length(discard) > 0 do
     # Draw is empty, but discard isn't, so move discard to draw and shuffle

@@ -10,6 +10,13 @@ defmodule ExAeonsEnd do
     pid
   end
 
+  def start_legacy, do: start_legacy(false)
+
+  def start_legacy(include_assault) do
+    {:ok, pid} = PlayerTurnDeck.start_link(["Nick", "Amanda"], include_assault)
+    pid
+  end
+
   def draw(pid) do
     card = PlayerTurnDeck.draw(pid)
 
